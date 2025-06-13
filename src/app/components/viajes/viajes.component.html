@@ -1,0 +1,134 @@
+<div class="container my-5 container-lar py-5 px-4">
+  <h2 class="mb-4">{{ modoEdicion ? "Editar viaje" : "Registrar viaje" }}</h2>
+
+  <form [formGroup]="formularioViaje" (ngSubmit)="guardarViaje()" class="mb-4">
+    <div class="row">
+      <div class="col-md-4">
+        <label>Origen</label>
+        <select formControlName="origenId" class="form-control">
+          <option value="">Selecciona origen</option>
+          <option *ngFor="let lugar of lugares" [value]="lugar.idLugar">
+            {{ lugar.nombre }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label>Destino</label>
+        <select formControlName="destinoId" class="form-control">
+          <option value="">Selecciona destino</option>
+          <option *ngFor="let lugar of lugares" [value]="lugar.idLugar">
+            {{ lugar.nombre }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label>Operador</label>
+        <select formControlName="operadorId" class="form-control">
+          <option value="">Selecciona operador</option>
+          <option
+            *ngFor="let operador of operadores"
+            [value]="operador.idOperador"
+          >
+            {{ operador.nombre }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <div class="col-md-6">
+        <label>Fecha y hora inicio</label>
+        <input
+          type="datetime-local"
+          formControlName="fechaHoraInicio"
+          class="form-control"
+        />
+      </div>
+      <div class="col-md-6">
+        <label>Fecha y hora fin</label>
+        <input
+          type="datetime-local"
+          formControlName="fechaHoraFin"
+          class="form-control"
+        />
+      </div>
+    </div>
+
+    <div
+      *ngIf="formularioViaje.errors?.['origenIgualDestino']"
+      class="alert alert-danger mt-2"
+    >
+      El origen y el destino no pueden ser iguales.
+    </div>
+
+    <div
+      *ngIf="formularioViaje.errors?.['fechaFinInvalida']"
+      class="alert alert-danger mt-2"
+    >
+      La fecha de fin debe ser posterior a la fecha de inicio.
+    </div>
+
+    <div class="mt-4 d-flex justify-content-center gap-2">
+      <button
+        class="btn btn-primary mt-3"
+        type="submit"
+        [disabled]="formularioViaje.invalid"
+      >
+        {{ modoEdicion ? "Actualizar" : "Guardar" }} viaje
+      </button>
+      <button
+        *ngIf="modoEdicion"
+        class="btn btn-danger mt-3 ms-2"
+        type="button"
+        (click)="resetFormulario()"
+      >
+        Cancelar
+      </button>
+    </div>
+  </form>
+
+  <div class="row mt-4"></div>
+  <div class="d-flex justify-content-between align-items-center my-4 flex-wrap">
+    <h2 class="mb-4">Viajes registrados</h2>
+    <div class="d-flex align-items-center ms-auto gap-2 col-md-4">
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="filtroOperador"
+        (ngModelChange)="aplicarFiltro()"
+        placeholder="Filtrar por nombre del operador"
+        name="filtroOperador"
+      />
+    </div>
+
+    <table class="table table-hover table-striped">
+      <thead>
+        <tr>
+          <th>Origen</th>
+          <th>Destino</th>
+          <th>Inicio</th>
+          <th>Fin</th>
+          <th>Operador</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let viaje of viajesFiltrados">
+          <td>{{ viaje.origen?.nombre }}</td>
+          <td>{{ viaje.destino?.nombre }}</td>
+          <td>{{ viaje.fechaHoraInicio | date : "short" }}</td>
+          <td>{{ viaje.fechaHoraFin | date : "short" }}</td>
+          <td>{{ viaje.operador?.nombre }}</td>
+          <td>
+            <button
+              class="btn btn-sm btn-secondary toggleDetailsBtn"
+              (click)="editarViaje(viaje)"
+            >
+              Editar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
